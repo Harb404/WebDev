@@ -1,0 +1,151 @@
+ <!-- FEATURED COLLECTION -->
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">// M-Luxe Gear</div>
+        <h2 class="display" style="font-size:30px;">Featured Collection</h2>
+      </div>
+
+      <div class="products">
+        <div class="product-card">
+          <div class="product-thumb">
+            <img src="<?php echo $images['tumbler']; ?>" alt="M-Luxe Tumbler">
+          </div>
+          <h3>M-Luxe Tumbler</h3>
+          <div class="price">₱1,000</div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb">
+            <img src="<?php echo $images['air1']; ?>" alt="M-Luxe Air1">
+          </div>
+          <h3>M-Luxe Air1</h3>
+          <div class="price">₱2,450</div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb">
+            <img src="<?php echo $images['cap']; ?>" alt="M-Luxe Cap">
+          </div>
+          <h3>M-Luxe Cap</h3>
+          <div class="price">₱650</div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb">
+            <img src="<?php echo $images['shirt']; ?>" alt="M-Luxe Shirt">
+          </div>
+          <h3>M-Luxe Shirt</h3>
+          <div class="price">₱1,250</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- TESTIMONIALS -->
+  <section class="testimonials">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow" style="text-align:center; display:block;">Feedback</div>
+        <h2 class="display" style="font-size:28px;">Style your ideal</h2>
+      </div>
+
+      <div class="t-grid">
+        <div class="t-card">
+          <div class="t-top"><div class="t-avatar"></div><div><div class="t-name">Richard Cornelius Timosa II</div><div class="t-loc">Dipolog City</div></div></div>
+          <div class="stars">★★★★★</div>
+          <div class="t-quote">"The quality is amazing."</div>
+        </div>
+        <div class="t-card">
+          <div class="t-top"><div class="t-avatar"></div><div><div class="t-name">Ciara Amber Saycon</div><div class="t-loc">Pamplona</div></div></div>
+          <div class="stars">★★★★★</div>
+          <div class="t-quote">"Wow, I love the style, it really fits the groove."</div>
+        </div>
+        <div class="t-card">
+          <div class="t-top"><div class="t-avatar"></div><div><div class="t-name">Hecate18</div><div class="t-loc">Tanjay City</div></div></div>
+          <div class="stars">★★★★★</div>
+          <div class="t-quote">"Their customer service quality is excellent!"</div>
+        </div>
+        <div class="t-card">
+          <div class="t-top"><div class="t-avatar"></div><div><div class="t-name">Harvey S. Masalihit</div><div class="t-loc">Bais City</div></div></div>
+          <div class="stars">★★★★★</div>
+          <div class="t-quote">"The design was wonderful."</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUEL / SPEC PANEL -->
+  <section class="fuel">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow">Discipline</div>
+        <h2 class="display" style="margin-top:12px;">Fuel your potential.<br>Wear your strength.</h2>
+        <p>Every stitch and seam is built around one idea: gear should disappear when you're moving well. Feel the lightness of the shirt, the grip of the tumbler in hand, and the quiet confidence of showing up ready.</p>
+      </div>
+      <div class="fuel-visual">
+        <img src="<?php echo $images['fuel']; ?>" alt="M-Luxe gear detail">
+        <div class="tag-line tag-1">Feel the lightness</div>
+        <div class="tag-line tag-2">Designed for peak endurance</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANNER -->
+  <section class="banner" id="contact">
+    <div class="wrap">
+      <span class="eyebrow">Move First</span>
+      <h2 class="display">Peak performance.<br>Zero excuses.</h2>
+      <span class="link-solid">View Collection</span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-mark"><span>M</span></span>
+          Masalihit Luxe
+        </div>
+        <p>Next-generation design meets everyday utility. High-performance shoes, shirts, and rugged drinkware engineered for your active lifestyle.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><span>Home</span></li>
+          <li><span>About</span></li>
+          <li><span>Features</span></li>
+          <li><span>Contact</span></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Collection</h4>
+        <ul>
+          <li><span>Shoes</span></li>
+          <li><span>Shirt</span></li>
+          <li><span>Tumbler</span></li>
+          <li><span>Cap</span></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><span>FAQ</span></li>
+          <li><span>Shipping</span></li>
+          <li><span>Returns</span></li>
+          <li><span>Size Guide</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <?php echo $year; ?> Masalihit Luxe. All rights reserved.</span>
+      <span>Gear Shift Mode</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

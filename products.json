@@ -1,0 +1,26 @@
+{
+    "tumbler": {
+        "name": "M-Luxe Tumbler",
+        "price": 1000,
+        "stock": 10,
+        "image": "Pictures/Bottle.png"
+    },
+    "air1": {
+        "name": "M-Luxe Air1",
+        "price": 4450,
+        "stock": 8,
+        "image": "Pictures/Sapatos.png"
+    },
+    "cap": {
+        "name": "M-Luxe Cap",
+        "price": 650,
+        "stock": 12,
+        "image": "Pictures/CAP.png"
+    },
+    "shirt": {
+        "name": "M-Luxe Shirt",
+        "price": 1250,
+        "stock": 11,
+        "image": "Pictures/Shirt.png"
+    }
+}

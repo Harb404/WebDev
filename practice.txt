@@ -1,0 +1,242 @@
+MASALIHIT LUXE — FRONT PAGE GUIDE
+==================================
+
+FILES
+-----
+index.php   -> the page content (HTML). No PHP logic is used yet, it's just
+               plain HTML saved as .php so it will run on any PHP server.
+style.css   -> all the visual styling (colors, fonts, spacing, layout).
+               Linked from index.php via:
+               <link rel="stylesheet" href="style.css">
+
+Keep both files in the SAME folder. If style.css is missing or moved,
+the page will load with no styling (plain black text on white).
+
+
+HOW THE PAGE IS ORGANIZED (top to bottom)
+------------------------------------------
+1. <header>            Sticky top navigation bar (logo, menu links, search box)
+2. <section class="hero">        Big intro banner: "BUILD FOR THOSE WHO MOVE FIRST"
+3. <section class="about">       The brand story paragraph + two image boxes
+4. <section id="features">       "Featured Collection" — the 4 product cards
+                                   (Tumbler, Air1 shoe, Cap, Shirt)
+5. <section class="testimonials"> Customer review cards ("Style Your Ideal")
+6. <section class="fuel">        "Fuel Your Potential" spec/description panel
+7. <section class="banner">      "Peak Performance. Zero Excuses" call-to-action
+8. <footer>             Bottom links (Company / Collection / Support) + copyright
+
+
+WHERE TO EDIT TEXT
+-------------------
+Just open index.php in any text editor and change the words directly.
+Examples:
+  - Headline:        search for  "Build for"
+  - Tagline:         search for  "Footwear, shirts, tumblers"
+  - Product names/prices: search for  "M-Luxe Tumbler", "M-Luxe Air1", etc.
+  - Reviews:          search for  "Richard Cornelius Timosa"
+  - Footer text:      search for  "Next-generation design"
+
+Nothing else needs to change — just edit the words between the tags,
+don't delete the < > tags themselves.
+
+
+WHERE TO ADD YOUR OWN PHOTOS
+------------------------------
+Right now the shoe/product graphics are simple line drawings (SVG code)
+used as placeholders. To swap in a real photo:
+
+1. Put your image file in the same folder (e.g. make an "images" folder
+   and put shoe-air1.jpg inside it).
+
+2. In index.php, find the placeholder block you want to replace.
+   Each one starts with either:
+      <svg class="shoe-svg">          (hero image)
+      <svg viewBox="0 0 420 340">     (about section images)
+      <svg viewBox="0 0 100 100">     (the 4 product thumbnails)
+      <svg viewBox="0 0 300 380">     (fuel/spec panel image)
+
+3. Delete that whole <svg> ... </svg> block and replace it with:
+      <img src="images/shoe-air1.jpg" alt="M-Luxe Shoe Air1"
+           style="width:100%; height:100%; object-fit:cover;">
+
+   (object-fit:cover keeps the photo filling the box neatly without
+   stretching it.)
+
+There are 8 placeholder graphics total:
+  - 1 in the hero section
+  - 2 in the about section
+  - 4 in the featured collection (tumbler, shoe, cap, shirt)
+  - 1 in the fuel/spec section
+
+
+WHERE TO EDIT COLORS / FONTS (style.css)
+-------------------------------------------
+At the very top of style.css there's a block like this:
+
+  :root{
+    --ink:#0d0d0e;      <- main background (near-black)
+    --panel:#151517;    <- card background
+    --bone:#f3efe6;     <- main text color (off-white)
+    --gold:#d3a24a;     <- gold accent color (prices, highlights, buttons)
+    --track:#b5442e;    <- rust/red accent used sparingly
+  }
+
+Changing any of these hex codes updates that color EVERYWHERE on the
+page automatically, since every section reuses these same variables.
+This is the easiest way to reskin the whole site's color scheme.
+
+
+NOTES ON THE "BUTTONS"
+-------------------------
+There are no <button> elements on this page — every clickable action
+(Shop the Drop, Our Story, View Collection, nav links, footer links)
+is a plain link (<a> tag) styled to look like a button. This was done
+on request. If you ever want real <button> elements instead (for
+example to hook up JavaScript actions), let me know and I can convert
+them.
+
+
+NEXT STEPS / THINGS YOU MIGHT WANT LATER
+-------------------------------------------
+- Replace placeholder SVG graphics with real product photos (see above)
+- Hook up the "Search" box or nav links to real pages
+- Add real PHP logic (e.g. pulling products from a database) since the
+  file is already saved as .php and ready for that
+- Make the "Shop the Drop" / "View Collection" links point to an actual
+  shop or catalog page instead of "#features"
+
+
+
+  
+        <div class="product-card">
+          <div class="product-thumb">
+            <svg viewBox="0 0 100 100"><path d="M15 60 C15 35 35 20 55 20 C75 20 90 35 90 55" fill="none" stroke="#d3a24a" stroke-width="2.4"/><path d="M15 60 L15 66 L90 66 L90 55" fill="none" stroke="#f3efe6" stroke-width="2"/><path d="M78 30 L92 22" stroke="#8a6d3b" stroke-width="2"/></svg>
+          </div>
+          <h3>M-Luxe Cap</h3>
+          <div class="price">₱650</div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb">
+            <svg viewBox="0 0 100 100"><path d="M30 22 L40 14 L60 14 L70 22 L86 30 L78 44 L70 40 L70 86 L30 86 L30 40 L22 44 L14 30 Z" fill="none" stroke="#d3a24a" stroke-width="2.2"/><text x="50" y="60" text-anchor="middle" fill="#8a6d3b" font-size="12" font-family="Arial" font-weight="700">M</text></svg>
+          </div>
+          <h3>M-Luxe Shirt</h3>
+          <div class="price">₱1,250</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow" style="text-align:center; display:block;">Feedback</div>
+        <h2 class="display" style="font-size:28px;">Style your ideal</h2>
+      </div>
+
+      <div class="t-grid">
+        <div class="t-card">
+          <div class="t-top"><div class="t-avatar"></div><div><div class="t-name">Richard Cornelius Timosa II</div><div class="t-loc">Dipolog City</div></div></div>
+          <div class="stars">★★★★★</div>
+          <div class="t-quote">"The quality is amazing."</div>
+        </div>
+        <div class="t-card">
+          <div class="t-top"><div class="t-avatar"></div><div><div class="t-name">Ciara Amber Saycon</div><div class="t-loc">Pamplona</div></div></div>
+          <div class="stars">★★★★★</div>
+          <div class="t-quote">"Wow, I love the style, it really fits the groove."</div>
+        </div>
+        <div class="t-card">
+          <div class="t-top"><div class="t-avatar"></div><div><div class="t-name">Hecate18</div><div class="t-loc">Tanjay City</div></div></div>
+          <div class="stars">★★★★★</div>
+          <div class="t-quote">"Their customer service quality is excellent!"</div>
+        </div>
+        <div class="t-card">
+          <div class="t-top"><div class="t-avatar"></div><div><div class="t-name">Harvey S. Masalihit</div><div class="t-loc">Bais City</div></div></div>
+          <div class="stars">★★★★★</div>
+          <div class="t-quote">"The design was wonderful."</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUEL / SPEC PANEL -->
+  <section class="fuel">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow">Discipline</div>
+        <h2 class="display" style="margin-top:12px;">Fuel your potential.<br>Wear your strength.</h2>
+        <p>Every stitch and seam is built around one idea: gear should disappear when you're moving well. Feel the lightness of the shirt, the grip of the tumbler in hand, and the quiet confidence of showing up ready.</p>
+      </div>
+      <div class="fuel-visual">
+        <svg viewBox="0 0 300 380" xmlns="http://www.w3.org/2000/svg">
+          <rect x="70" y="40" width="90" height="130" fill="none" stroke="#f3efe6" stroke-width="2"/>
+          <text x="115" y="112" text-anchor="middle" fill="#d3a24a" font-size="20" font-family="Arial" font-weight="900">M</text>
+          <rect x="185" y="190" width="46" height="120" rx="20" fill="none" stroke="#d3a24a" stroke-width="2.4"/>
+          <line x1="70" y1="40" x2="30" y2="10" stroke="#8a6d3b" stroke-width="1.4"/>
+          <line x1="160" y1="170" x2="200" y2="200" stroke="#8a6d3b" stroke-width="1.4"/>
+        </svg>
+        <div class="tag-line tag-1">Feel the lightness</div>
+        <div class="tag-line tag-2">Designed for peak endurance</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANNER -->
+  <section class="banner" id="contact">
+    <div class="wrap">
+      <span class="eyebrow">Move First</span>
+      <h2 class="display">Peak performance.<br>Zero excuses.</h2>
+      <span class="link-solid">View Collection</span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-mark"><span>M</span></span>
+          Masalihit Luxe
+        </div>
+        <p>Next-generation design meets everyday utility. High-performance shoes, shirts, and rugged drinkware engineered for your active lifestyle.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><span>Home</span></li>
+          <li><span>About</span></li>
+          <li><span>Features</span></li>
+          <li><span>Contact</span></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Collection</h4>
+        <ul>
+          <li><span>Shoes</span></li>
+          <li><span>Shirt</span></li>
+          <li><span>Tumbler</span></li>
+          <li><span>Cap</span></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><span>FAQ</span></li>
+          <li><span>Shipping</span></li>
+          <li><span>Returns</span></li>
+          <li><span>Size Guide</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <?php echo $year; ?> Masalihit Luxe. All rights reserved.</span>
+      <span>Gear Shift Mode</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
