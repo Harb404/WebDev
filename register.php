@@ -29,12 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = strtolower(trim($_POST['email'] ?? ''));
   $password = $_POST['password'] ?? '';
   $confirmPassword = $_POST['confirm_password'] ?? '';
-  $address = trim($_POST['address'] ?? '');
-  $location = trim($_POST['location'] ?? '');
-  $zip = trim($_POST['zip'] ?? '');
-  $phone = trim($_POST['phone'] ?? '');
+  $address = '';
+  $location = '';
+  $zip = '';
+  $phone = '';
 
-  $error = validateRegistrationFields($name, $email, $password, $address, $location, $zip, $phone);
+  $error = validateRegistrationFields($name, $email, $password, $address, $location, $zip, $phone, true, false);
   if ($error === '' && $password !== $confirmPassword) {
     $error = 'Passwords do not match.';
   }
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       unset($_SESSION['is_admin']);
       $_SESSION['user_id'] = (int) $database->lastInsertId();
       $_SESSION['user_name'] = $name;
-      header('Location: ' . ($nextUrl ?: 'account.php?checkout=1'));
+      header('Location: ' . ($nextUrl ?: 'index.php'));
       exit;
     } catch (PDOException $exception) {
       $error = 'That email is already registered.';
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form class="auth-card" method="post">
     <div class="eyebrow">Masalihit Luxe</div>
     <h1 class="display">Create Account</h1>
-    <p class="form-intro">Set up your delivery details once for faster checkout.</p>
+    <p class="form-intro"></p>
     <?php if ($error): ?><p class="form-error"><?php echo htmlspecialchars($error); ?></p><?php endif; ?>
     <?php if ($nextUrl): ?><input type="hidden" name="next" value="<?php echo htmlspecialchars($nextUrl); ?>"><?php endif; ?>
     <label>Name<input type="text" name="name" required autocomplete="name"></label>
@@ -93,11 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       <span class="form-error password-match-error" id="confirm-password-error" hidden>Passwords do not match.</span>
     </label>
-    <label>Delivery Address<input type="text" name="address" required autocomplete="street-address"></label>
-    <label>City / Location<input type="text" name="location" required autocomplete="address-level2"></label>
-    <label>ZIP Code<input type="text" name="zip" required autocomplete="postal-code"></label>
-    <label>Phone Number<input type="tel" name="phone" pattern="09[0-9]{9}" maxlength="11" inputmode="numeric" placeholder="09XXXXXXXXX" title="11 digits starting with 09, e.g. 09171234567" required autocomplete="tel"></label>
-    <p class="form-note">You can add delivery comments later, at checkout.</p>
+    <p class="form-note"></p>
     <button class="cart-button" type="submit">Create Account</button>
     <a class="back-link" href="login.php">Already have an account? Log in</a>
     <a class="back-link" href="index.php">Back to store</a>

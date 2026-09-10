@@ -132,7 +132,7 @@ function renderChatMessages(messages) {
 }
 
 function pollChatMessages() {
-    fetch('chat.php?action=poll')
+    fetch('Chat.php?action=poll')
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (data && data.success) {
@@ -173,7 +173,7 @@ function setupChatForm() {
         }
         messageInput.value = '';
 
-        fetch('chat.php', { method: 'POST', body: formData })
+        fetch('Chat.php', { method: 'POST', body: formData })
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (data && data.success) {
@@ -190,6 +190,166 @@ function toggleCart() {
 
     var isOpen = cartPanel.classList.toggle('open');
     cartPanel.setAttribute('aria-hidden', String(!isOpen));
+}
+
+/* ---------- Order status notification bell ---------- */
+
+var notifToastedIds = {};
+
+function showOrderToast(message) {
+    if (!message) return;
+    var toast = document.getElementById('order-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'order-toast';
+        toast.className = 'cart-toast order-toast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    clearTimeout(toast._hideTimer);
+    requestAnimationFrame(function() {
+        toast.classList.add('show');
+    });
+    toast._hideTimer = setTimeout(function() {
+        toast.classList.remove('show');
+    }, 3200);
+}
+
+function renderNotifications(notifications) {
+    var list = document.getElementById('notif-list');
+    if (!list) return;
+
+    if (!notifications || !notifications.length) {
+        list.innerHTML = '<p class="notif-empty">No order updates yet.</p>';
+        return;
+    }
+
+    list.innerHTML = notifications.map(function(notification) {
+        var orderText = notification.status === 'delivered' ? 'Your order was successful' :
+            notification.status === 'failed' ? 'Your order failed' :
+            'Your order';
+        var metaParts = [orderText];
+        if (notification.orderedAt) metaParts.push(notification.orderedAt);
+        return '<div class="notif-item notif-' + notification.status + (notification.unread ? ' notif-unread' : '') + '" data-order-id="' + notification.orderId + '" role="button" tabindex="0">' +
+            '<span class="notif-item-meta">' + metaParts.join(' · ') + '</span>' +
+            '<span class="notif-item-status">' + notification.statusLabel + '</span>' +
+            '</div>';
+    }).join('');
+
+    list.querySelectorAll('.notif-item').forEach(function(item) {
+        function goToOrder() {
+            var panel = document.getElementById('notif-panel');
+            var toggleBtn = document.getElementById('notif-toggle-btn');
+            if (panel) {
+                panel.classList.remove('open');
+                panel.setAttribute('aria-hidden', 'true');
+            }
+            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+            window.location.href = 'account.php#order-' + item.dataset.orderId;
+        }
+        item.addEventListener('click', goToOrder);
+        item.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                goToOrder();
+            }
+        });
+    });
+}
+
+function updateNotifBadge(count) {
+    var badge = document.getElementById('notif-count');
+    var toggleBtn = document.getElementById('notif-toggle-btn');
+    if (!badge) return;
+    if (count > 0) {
+        badge.textContent = count > 9 ? '9+' : String(count);
+        badge.style.display = '';
+        if (toggleBtn) {
+            toggleBtn.classList.remove('bump');
+            void toggleBtn.offsetWidth;
+            toggleBtn.classList.add('bump');
+        }
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function pollNotifications() {
+    if (!document.getElementById('notif-toggle-btn')) return;
+    fetch('Notification.php?action=poll&_=' + Date.now(), { credentials: 'same-origin', cache: 'no-store' })
+        .then(function(response) {
+            if (!response.ok) throw new Error('Notification.php poll failed: ' + response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data.success) {
+                console.error('Notification poll error:', data.message);
+                return;
+            }
+            renderNotifications(data.notifications);
+            updateNotifBadge(data.unreadCount);
+
+            (data.notifications || []).forEach(function(notification) {
+                if (notification.unread && !notifToastedIds[notification.orderId]) {
+                    notifToastedIds[notification.orderId] = true;
+                    var toastText = notification.status === 'delivered' ? 'Your order was successful.' :
+                        notification.status === 'failed' ? 'Your order failed.' :
+                        'Your order is now ' + notification.statusLabel + '.';
+                    showOrderToast(toastText);
+                }
+            });
+        })
+        .catch(function(error) {
+            console.error('Notification poll failed:', error);
+        });
+}
+
+function toggleNotifications() {
+    var panel = document.getElementById('notif-panel');
+    var toggleBtn = document.getElementById('notif-toggle-btn');
+    if (!panel || !toggleBtn) return;
+
+    var isOpen = panel.classList.toggle('open');
+    panel.setAttribute('aria-hidden', String(!isOpen));
+    toggleBtn.setAttribute('aria-expanded', String(isOpen));
+
+    if (isOpen) {
+        fetch('Notification.php?action=mark_read&_=' + Date.now(), { method: 'POST', credentials: 'same-origin', cache: 'no-store' })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Notification.php mark_read failed: ' + response.status);
+                return response.json();
+            })
+            .then(function(data) {
+                if (!data.success) {
+                    console.error('Notification mark_read error:', data.message);
+                    return;
+                }
+                renderNotifications(data.notifications);
+                updateNotifBadge(0);
+            })
+            .catch(function(error) {
+                console.error('Notification mark_read failed:', error);
+            });
+    }
+}
+
+function setupNotifications() {
+    var toggleBtn = document.getElementById('notif-toggle-btn');
+    if (!toggleBtn) return;
+
+    pollNotifications();
+    setInterval(pollNotifications, 10000);
+
+    document.addEventListener('click', function(event) {
+        var wrap = document.querySelector('.notif-wrap');
+        var panel = document.getElementById('notif-panel');
+        if (!wrap || !panel || !panel.classList.contains('open')) return;
+        if (!wrap.contains(event.target)) {
+            panel.classList.remove('open');
+            panel.setAttribute('aria-hidden', 'true');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
 }
 
 /* ---------- Prevent scroll-wheel from changing focused number inputs ---------- */
@@ -394,7 +554,7 @@ function handleCartFormSubmit(form, submitter) {
 
     if (submitter) submitter.disabled = true;
 
-    fetch('cart.php', {
+    fetch('Cart.php', {
             method: 'POST',
             body: formData,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -440,6 +600,96 @@ function setupCartAjax() {
     });
 }
 
+/* ---------- Buy Now confirmation + receipt modal (checkout page) ---------- */
+
+function closeBuyConfirm() {
+    var backdrop = document.getElementById('buy-confirm-backdrop');
+    var modal = document.getElementById('buy-confirm-modal');
+    if (backdrop) backdrop.classList.remove('open');
+    if (modal) modal.classList.remove('open');
+}
+
+function setupBuyConfirmation() {
+    var form = document.getElementById('buy-form');
+    var backdrop = document.getElementById('buy-confirm-backdrop');
+    var modal = document.getElementById('buy-confirm-modal');
+    var totalEl = document.getElementById('buy-confirm-total');
+    var confirmBtn = document.getElementById('buy-confirm-submit');
+    if (!form || !backdrop || !modal || !confirmBtn) return;
+
+    var confirmed = false;
+
+    form.addEventListener('submit', function(event) {
+        if (confirmed) return;
+        event.preventDefault();
+        if (totalEl) totalEl.textContent = form.dataset.total || 'this amount';
+        backdrop.classList.add('open');
+        modal.classList.add('open');
+    });
+
+    confirmBtn.addEventListener('click', function() {
+        confirmed = true;
+        closeBuyConfirm();
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+        } else {
+            form.submit();
+        }
+    });
+
+    backdrop.addEventListener('click', closeBuyConfirm);
+}
+
+function closeReceiptModal() {
+    var backdrop = document.getElementById('receipt-modal-backdrop');
+    var modal = document.getElementById('receipt-modal');
+    if (backdrop) backdrop.classList.remove('open');
+    if (modal) modal.classList.remove('open');
+}
+
+function setupReceiptModal() {
+    var backdrop = document.getElementById('receipt-modal-backdrop');
+    var modal = document.getElementById('receipt-modal');
+    if (!backdrop || !modal || !modal.dataset.autoOpen) return;
+    backdrop.classList.add('open');
+    modal.classList.add('open');
+    backdrop.addEventListener('click', closeReceiptModal);
+}
+
+function copyReceiptNumber() {
+    var el = document.getElementById('receipt-number-value');
+    var btn = document.querySelector('.receipt-copy-btn');
+    if (!el) return;
+    var text = el.textContent.trim();
+
+    function showCopied() {
+        if (!btn) return;
+        var original = btn.dataset.originalLabel || btn.textContent;
+        btn.dataset.originalLabel = original;
+        btn.textContent = 'Copied!';
+        clearTimeout(btn._resetTimer);
+        btn._resetTimer = setTimeout(function() {
+            btn.textContent = original;
+        }, 1500);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showCopied).catch(function() {});
+    } else {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            showCopied();
+        } catch (err) {}
+        document.body.removeChild(textarea);
+    }
+}
+
 window.addEventListener('pageshow', function(event) {
     if (event.persisted) {
         window.location.reload();
@@ -457,6 +707,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setupChatForm();
     setupPasswordToggles();
     setupPasswordConfirmCheck();
+    setupBuyConfirmation();
+    setupReceiptModal();
+    setupNotifications();
 
     if (document.getElementById('chat-messages')) {
         startChatPolling();

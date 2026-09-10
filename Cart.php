@@ -10,6 +10,11 @@ foreach ($database->query('SELECT id, name, price, stock, image FROM products OR
 }
 
 $cart = $_SESSION['cart'] ?? [];
+// Drop any cart entries for products that no longer exist (e.g. deleted
+// from the Admin Panel) so the returned count/total always match the
+// cart HTML actually rendered below, instead of counting ghost items.
+$cart = array_intersect_key($cart, $products);
+$_SESSION['cart'] = $cart;
 $action = $_POST['action'] ?? '';
 $productId = $_POST['product_id'] ?? '';
 $message = '';

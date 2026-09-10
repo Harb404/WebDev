@@ -9,6 +9,11 @@ foreach ($database->query('SELECT id, name, price, stock, image FROM products OR
   $products[$product['id']] = $product;
 }
 $cart = $_SESSION['cart'] ?? [];
+// Drop any cart entries for products that no longer exist (e.g. deleted
+// from the Admin Panel) so the cart count/total always match what the
+// drawer actually displays instead of counting ghost items.
+$cart = array_intersect_key($cart, $products);
+$_SESSION['cart'] = $cart;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $action = $_POST['action'] ?? '';
@@ -68,43 +73,11 @@ foreach ($cart as $productId => $quantity) {
       <li><span onclick="window.location.href='index.php#features'">Features</span></li>
       <li><span class="active">Contact Us</span></li>
     </ul>
-    <div class="store-actions">
-      <?php if ($isLoggedIn): ?>
-        <a class="nav-action" href="account.php">Profile</a>
-        <?php if (!empty($_SESSION['is_admin'])): ?><a class="nav-action" href="admin.php">Admin Panel</a><?php endif; ?>
-        <a class="nav-action" href="logout.php">Logout</a>
-      <?php else: ?>
-        <a class="nav-action" href="login.php">Login</a>
-      <?php endif; ?>
-      <button class="nav-action cart-toggle" id="cart-toggle-btn" type="button" onclick="toggleCart()">Cart <span class="cart-count" id="cart-count"<?php echo $cartCount > 0 ? '' : ' style="display:none;"'; ?>><?php echo $cartCount; ?></span></button>
-    </div>
+    <?php include __DIR__ . '/includes/store-actions.php'; ?>
   </nav>
 </header>
 
-<aside class="cart-drawer" id="cart-panel" aria-hidden="true">
-  <div class="cart-drawer-header">
-    <h2>Shopping Cart</h2>
-    <button class="cart-close" type="button" onclick="toggleCart()" aria-label="Close cart">×</button>
-  </div>
-  <div id="cart-content">
-  <?php if (!$cart): ?>
-    <p class="empty-cart">Your cart is empty.</p>
-  <?php else: ?>
-    <div class="cart-list">
-      <?php foreach ($cart as $productId => $quantity): if (!isset($products[$productId])) continue; $product = $products[$productId]; $lineTotal = $product['price'] * $quantity; ?>
-        <div class="cart-row">
-          <span><?php echo htmlspecialchars($product['name']); ?></span>
-          <strong>₱<?php echo number_format($lineTotal); ?></strong>
-          <form class="quantity-controls" method="post" data-cart-form><input type="hidden" name="action" value="change_cart_quantity"><input type="hidden" name="product_id" value="<?php echo htmlspecialchars($productId); ?>"><button type="submit" name="change" value="-1" aria-label="Decrease quantity">−</button><span><?php echo (int) $quantity; ?></span><button type="submit" name="change" value="1" aria-label="Increase quantity" <?php echo $quantity >= $product['stock'] ? 'disabled' : ''; ?>>+</button></form>
-          <form method="post" data-cart-form><input type="hidden" name="action" value="remove_from_cart"><input type="hidden" name="product_id" value="<?php echo htmlspecialchars($productId); ?>"><button class="remove-button" type="submit">Remove</button></form>
-        </div>
-      <?php endforeach; ?>
-      <div class="cart-total">Total: ₱<?php echo number_format($cartTotal); ?></div>
-      <a class="buy-now-btn" href="<?php echo htmlspecialchars($buyUrl); ?>"><span class="buy-now-icon" aria-hidden="true">⚡</span>Buy Now</a>
-    </div>
-  <?php endif; ?>
-  </div>
-</aside>
+<?php include __DIR__ . '/includes/cart-drawer.php'; ?>
 
 <main id="top">
   <section class="contact-page reveal">
@@ -148,55 +121,7 @@ foreach ($cart as $productId => $quantity) {
   </section>
 </main>
 
-<footer>
-  <div class="wrap">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="logo">
-          <span class="logo-mark"><img src="Pictures/logoh.png" alt="Masalihit Luxe logo"></span>
-          Masalihit Luxe
-        </div>
-        <p>Next-generation design meets everyday utility. High-performance shoes, shirts, and rugged drinkware engineered for your active lifestyle.</p>
-        <div class="footer-social">
-          <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 8h-2c-.55 0-1 .45-1 1v2h3l-.4 3H12v7h-3v-7H7v-3h2V8.5C9 6.57 10.57 5 12.5 5H15v3Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
-          <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 5.5c-.7.35-1.46.58-2.25.69a3.9 3.9 0 0 0 1.71-2.16c-.76.46-1.6.8-2.5.98A3.86 3.86 0 0 0 15.1 4c-2.15 0-3.9 1.78-3.9 3.98 0 .31.03.62.1.9-3.24-.17-6.11-1.75-8.03-4.17-.34.6-.53 1.29-.53 2.03 0 1.38.69 2.6 1.73 3.32-.64-.02-1.24-.2-1.77-.5v.05c0 1.93 1.34 3.54 3.13 3.9-.33.09-.67.14-1.03.14-.25 0-.5-.02-.73-.07.5 1.58 1.94 2.73 3.65 2.76A7.72 7.72 0 0 1 2 18.4a10.85 10.85 0 0 0 5.94 1.77c7.13 0 11.03-6.03 11.03-11.26l-.01-.51c.76-.56 1.42-1.26 1.94-2.06-.7.32-1.44.53-2.2.63Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span>
-          <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor"/></svg></span>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h4>Company</h4>
-        <ul>
-          <li><span onclick="window.location.href='index.php'">Home</span></li>
-          <li><span onclick="window.location.href='index.php#about'">About</span></li>
-          <li><span onclick="window.location.href='index.php#features'">Features</span></li>
-          <li><span onclick="window.location.href='contact.php'">Contact</span></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Collection</h4>
-        <ul>
-          <li><span onclick="window.location.href='index.php#features'">Shoes</span></li>
-          <li><span onclick="window.location.href='index.php#features'">Shirt</span></li>
-          <li><span onclick="window.location.href='index.php#features'">Tumbler</span></li>
-          <li><span onclick="window.location.href='index.php#features'">Cap</span></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Support</h4>
-        <ul>
-          <li><span onclick="window.location.href='contact.php'">FAQ</span></li>
-          <li><span onclick="window.location.href='contact.php'">Shipping</span></li>
-          <li><span onclick="window.location.href='contact.php'">Returns</span></li>
-          <li><span onclick="window.location.href='contact.php'">Size Guide</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© <?php echo $year; ?> Masalihit Luxe. All rights reserved.</span>
-      <span>Gear Shift Mode</span>
-    </div>
-  </div>
-</footer>
+<?php $onHomePage = false; include __DIR__ . '/includes/footer.php'; ?>
 
 </body>
 </html>
