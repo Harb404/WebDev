@@ -2,8 +2,18 @@
 session_start();
 require_once __DIR__ . '/database.php';
 
+// Prevent the browser from showing a cached copy of this page (e.g. via the
+// back button) once the visitor has already logged in.
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Pragma: no-cache');
+
 if (!empty($_SESSION['is_admin'])) {
   header('Location: admin.php');
+  exit;
+}
+
+if (!empty($_SESSION['user_id'])) {
+  header('Location: index.php');
   exit;
 }
 
@@ -33,8 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $user = $statement->fetch(PDO::FETCH_ASSOC);
 
   if ($user && $user['role'] === 'admin' && password_verify($password, $user['password'])) {
-    unset($_SESSION['user_id'], $_SESSION['user_name']);
     $_SESSION['is_admin'] = true;
+    $_SESSION['user_id'] = (int) $user['id'];
+    $_SESSION['user_name'] = $user['name'];
     header('Location: admin.php');
     exit;
   }
@@ -48,8 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $_SESSION['user_name'] = $user['name'];
       if ($nextUrl) {
         header('Location: ' . $nextUrl);
+      } elseif (isset($_GET['checkout'])) {
+        header('Location: account.php?checkout=1');
       } else {
-        header('Location: account.php' . (isset($_GET['checkout']) ? '?checkout=1' : ''));
+        header('Location: index.php');
       }
       exit;
     }

@@ -19,7 +19,7 @@ function isValidPhone(string $phone): bool
  * Returns an empty string when everything is valid, or a human-readable
  * error message describing the first problem found.
  */
-function validateRegistrationFields(string $name, string $email, string $password, string $address, string $location, string $zip, string $phone, bool $requirePassword = true): string
+function validateRegistrationFields(string $name, string $email, string $password, string $address, string $location, string $zip, string $phone, bool $requirePassword = true, bool $requireDelivery = true): string
 {
   if ($name === '') {
     return 'Please enter your name.';
@@ -30,11 +30,13 @@ function validateRegistrationFields(string $name, string $email, string $passwor
   if ($requirePassword && strlen($password) < 6) {
     return 'Password must be at least 6 characters.';
   }
-  if ($address === '' || $location === '' || $zip === '' || $phone === '') {
-    return 'Complete your name, email, password, address, location, ZIP code, and phone number.';
-  }
-  if (!isValidPhone($phone)) {
-    return 'Phone number must be 11 digits and start with 09 (e.g. 09171234567).';
+  if ($requireDelivery) {
+    if ($address === '' || $location === '' || $zip === '' || $phone === '') {
+      return 'Complete your name, email, password, address, location, ZIP code, and phone number.';
+    }
+    if (!isValidPhone($phone)) {
+      return 'Phone number must be 11 digits and start with 09 (e.g. 09171234567).';
+    }
   }
   return '';
 }
@@ -52,6 +54,20 @@ function validateDeliveryFields(string $address, string $location, string $zip, 
     return 'Phone number must be 11 digits and start with 09 (e.g. 09171234567).';
   }
   return '';
+}
+
+/**
+ * Generates a customer-facing receipt number for a freshly placed order,
+ * e.g. "masalihitluxe-1241-aabcd".
+ */
+function generateReceiptNumber(int $orderId): string
+{
+  $letters = 'abcdefghijklmnopqrstuvwxyz';
+  $suffix = '';
+  for ($i = 0; $i < 5; $i++) {
+    $suffix .= $letters[random_int(0, strlen($letters) - 1)];
+  }
+  return 'masalihitluxe-' . $orderId . '-' . $suffix;
 }
 
 /**

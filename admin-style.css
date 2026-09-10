@@ -17,6 +17,10 @@
     --green-bg: rgba(76, 175, 130, 0.14);
     --amber: #e2b455;
     --amber-bg: rgba(226, 180, 85, 0.14);
+    --sky: #5a9ed6;
+    --sky-bg: rgba(90, 158, 214, 0.14);
+    --violet: #9a7bd6;
+    --violet-bg: rgba(154, 123, 214, 0.14);
     --red: #e2585c;
     --red-bg: rgba(226, 88, 92, 0.14);
     --radius: 10px;
@@ -430,6 +434,30 @@ a {
     margin-bottom: 16px;
 }
 
+.dash-panel-head-with-search {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.dash-search-input {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.85rem;
+    min-width: 240px;
+}
+
+.dash-search-input:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
 .dash-panel-title {
     font-weight: 700;
     font-size: 0.95rem;
@@ -544,14 +572,26 @@ a {
 }
 
 .dash-status-chip span {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-weight: 800;
     border-radius: 999px;
     padding: 1px 9px;
 }
 
+.status-pending {
+    background: var(--blue-light);
+    color: var(--blue);
+}
+
 .status-processing {
-    background: var(--amber-bg);
-    color: var(--amber);
+    background: var(--sky-bg);
+    color: var(--sky);
+}
+
+.status-shipped {
+    background: var(--violet-bg);
+    color: var(--violet);
 }
 
 .status-delivered {
@@ -680,6 +720,15 @@ a {
     font: inherit;
 }
 
+.dash-inline-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
 .dash-inline-form select,
 .dash-inline-form input[type="datetime-local"] {
     padding: 8px 10px;
@@ -750,6 +799,12 @@ a {
     font-size: 0.76rem;
 }
 
+.dash-receipt-number {
+    color: var(--blue);
+    font-family: monospace;
+    font-size: 0.76rem;
+}
+
 .dash-history-up {
     color: var(--green);
     font-weight: 700;
@@ -801,12 +856,33 @@ a {
     height: 620px;
 }
 
+.dash-chat-threads-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+}
+
+.dash-chat-search-input {
+    width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+}
+
 .dash-chat-threads {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow-y: auto;
     padding: 8px;
+    flex: 1;
+    min-height: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.dash-chat-threads::-webkit-scrollbar {
+    display: none;
 }
 
 .dash-chat-thread {
@@ -898,6 +974,12 @@ a {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.dash-chat-log::-webkit-scrollbar {
+    display: none;
 }
 
 .dash-chat-bubble {
@@ -1016,5 +1098,37 @@ a {
     }
     .dash-content {
         padding: 18px 16px 36px;
+    }
+}
+
+
+/* ===== Inventory editor ===== */
+
+.dash-inventory-row {
+    align-items: center;
+}
+
+.dash-inventory-edit-form {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.dash-inventory-edit-form .dash-inline-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dash-inventory-edit-form input[type="number"] {
+    width: 95px;
+}
+
+@media (max-width: 700px) {
+    .dash-inventory-row {
+        align-items: stretch;
+    }
+    .dash-inventory-edit-form {
+        width: 100%;
+        justify-content: flex-start;
     }
 }

@@ -1,0 +1,176 @@
+/* Discount code UI (append to style.css) */
+
+.discount-code-block {
+    margin: 18px 0;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.discount-code-label {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: #999;
+    margin-bottom: 8px;
+}
+
+
+/* Combined pill: input + button share one rounded border instead of
+   sitting as two separate boxes. */
+
+.discount-input-row {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #141414;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.discount-input-row:focus-within {
+    border-color: #d97a4d;
+    box-shadow: 0 0 0 3px rgba(217, 122, 77, 0.18);
+}
+
+.discount-input-row input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.discount-input-row input[type="text"]:focus {
+    outline: none;
+}
+
+.discount-input-row input[type="text"]::placeholder {
+    text-transform: none;
+    letter-spacing: normal;
+    color: #777;
+}
+
+.discount-apply-btn {
+    padding: 0 20px;
+    border: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    background: #d97a4d;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.discount-apply-btn:hover {
+    background: #e8895c;
+}
+
+.discount-apply-btn:active {
+    background: #c96c40;
+}
+
+.discount-applied-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(90, 190, 120, 0.1);
+    border: 1px solid rgba(90, 190, 120, 0.35);
+}
+
+.discount-applied-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(90, 190, 120, 0.25);
+    color: #7fd99a;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.discount-applied-text {
+    flex: 1;
+    font-size: 13px;
+    color: #ddd;
+}
+
+.discount-remove-form {
+    display: contents;
+}
+
+.discount-remove-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #999;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.discount-remove-btn:hover {
+    color: #ccc;
+}
+
+.discount-feedback {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.discount-feedback-success {
+    color: #7fd99a;
+}
+
+.discount-feedback-error {
+    color: #e07a6c;
+}
+
+.checkout-totals {
+    margin: 18px 0 16px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.checkout-subtotal-line {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.checkout-discount-line {
+    color: #d97a4d;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.checkout-total {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 19px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
