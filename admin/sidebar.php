@@ -35,6 +35,10 @@
         <svg viewBox="0 0 24 24" fill="none"><path d="M20.5 12.3 12.7 20a1.5 1.5 0 0 1-2.1 0l-7-7a1.5 1.5 0 0 1 0-2.1L11.4 3h6.6a2.5 2.5 0 0 1 2.5 2.5v6.8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16" cy="8" r="1.4" fill="currentColor"/></svg>
         Discounts
       </button>
+      <button type="button" class="dash-nav-item<?php echo $activePanel === 'feedback' ? ' active' : ''; ?>" data-section="feedback">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 17.3l-5.3 3 1-5.9L3 9.9l5.9-.9L12 3.5l3.1 5.5 5.9.9-4.7 4.5 1 5.9z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Feedback
+      </button>
       <button type="button" class="dash-nav-item<?php echo $activePanel === 'messages' ? ' active' : ''; ?>" data-section="messages">
         <svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5h16a1 1 0 011 1V16a1 1 0 01-1 1H9l-4.5 3.5V17H4a1 1 0 01-1-1V6.5a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
         Messages

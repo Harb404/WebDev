@@ -81,11 +81,16 @@ foreach ($cart as $productId => $quantity) {
 
 <main id="top">
   <section class="contact-page reveal">
-    <div class="wrap contact-page-grid">
+    <div class="wrap contact-page-single">
       <div class="contact-page-info">
         <div class="eyebrow">Get In Touch</div>
         <h1 class="display">Contact Us</h1>
-        <p class="contact-intro">Have a question about an order, sizing, or the collection? Reach out — we usually reply within a day.</p>
+        <p class="contact-intro">Have a question about an order, sizing, or the collection? Reach out we usually reply within a day.</p>
+        <?php if ($isLoggedIn): ?>
+          <a class="contact-profile-btn" href="account.php">Message us from your profile →</a>
+        <?php else: ?>
+          <a class="contact-profile-btn" href="login.php?next=<?php echo urlencode('account.php'); ?>">Log in to message us →</a>
+        <?php endif; ?>
         <div class="contact-list">
           <div class="contact-row">
             <span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M4 6l8 7 8-7" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
@@ -97,24 +102,8 @@ foreach ($cart as $productId => $quantity) {
           </div>
           <div class="contact-row">
             <span class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.4"/></svg></span>
-            <div><strong>Location</strong><span>Dumaguete, Philippines</span></div>
+            <div><strong>Location</strong><span>Robinsons Place, Dumaguete, Philippines</span></div>
           </div>
-        </div>
-      </div>
-
-      <div class="contact-page-chat">
-        <div class="chat-widget">
-          <div class="chat-widget-head">Live Chat<span class="chat-widget-status">We usually reply fast</span></div>
-          <div class="chat-messages" id="chat-messages"><p class="chat-empty">Say hello — we're happy to help.</p></div>
-          <form class="chat-form" id="chat-form">
-            <input type="text" id="chat-name-input" placeholder="Your name" autocomplete="name" <?php echo $isLoggedIn ? 'hidden' : ''; ?>>
-            <div class="chat-form-row">
-              <input type="text" id="chat-message-input" placeholder="Type a message…" autocomplete="off" required>
-              <button type="submit" aria-label="Send message">
-                <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l16-7-6.5 16-2.8-6.7L4 12z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-              </button>
-            </div>
-          </form>
         </div>
       </div>
     </div>

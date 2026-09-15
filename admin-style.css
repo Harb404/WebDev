@@ -712,6 +712,10 @@ a {
 
 .dash-inline-form input[type="number"] {
     width: 80px;
+}
+
+.dash-inline-form input[type="number"],
+.dash-inline-form input[type="text"] {
     padding: 8px 10px;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -844,6 +848,39 @@ a {
     font-size: 0.85rem;
     text-align: center;
     padding: 20px 0;
+}
+
+.dash-feedback-hint {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-top: 4px;
+}
+
+.dash-feedback-stars {
+    color: var(--blue);
+    letter-spacing: 1px;
+}
+
+.dash-feedback-comment {
+    display: block;
+    color: var(--text);
+    font-style: italic;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    max-width: 520px;
+}
+
+.dash-badge-featured {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--green-bg);
+    color: var(--green);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 
@@ -1121,6 +1158,10 @@ a {
 
 .dash-inventory-edit-form input[type="number"] {
     width: 95px;
+}
+
+.dash-inventory-edit-form input[type="text"] {
+    width: 160px;
 }
 
 @media (max-width: 700px) {

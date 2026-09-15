@@ -214,6 +214,30 @@ function getDatabase(): PDO
     FOREIGN KEY (order_id) REFERENCES orders(id)
   ) ENGINE=InnoDB");
 
+  // The product_id FK above was created with no ON DELETE rule, so MySQL
+  // defaults to RESTRICT: deleting a product with any reviews throws a
+  // 1451 integrity constraint error. Swap it for ON DELETE CASCADE so
+  // removing a product cleans up its reviews instead of blocking.
+  $reviewsProductFk = $database->prepare("SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'reviews' AND COLUMN_NAME = 'product_id' AND REFERENCED_TABLE_NAME = 'products'");
+  $reviewsProductFk->execute([$databaseName]);
+  $reviewsProductFkName = $reviewsProductFk->fetchColumn();
+  if ($reviewsProductFkName) {
+    $reviewsProductFkOnDelete = $database->prepare("SELECT DELETE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = ? AND TABLE_NAME = 'reviews' AND CONSTRAINT_NAME = ?");
+    $reviewsProductFkOnDelete->execute([$databaseName, $reviewsProductFkName]);
+    if ($reviewsProductFkOnDelete->fetchColumn() !== 'CASCADE') {
+      $database->exec("ALTER TABLE reviews DROP FOREIGN KEY `$reviewsProductFkName`");
+      $database->exec("ALTER TABLE reviews ADD CONSTRAINT fk_reviews_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE");
+    }
+  }
+
+  // Lets admins pick specific reviews to show in the homepage testimonials
+  // section instead of the old hardcoded four.
+  $reviewsFeaturedColumn = $database->prepare("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'reviews' AND COLUMN_NAME = 'is_featured'");
+  $reviewsFeaturedColumn->execute([$databaseName]);
+  if (!$reviewsFeaturedColumn->fetchColumn()) {
+    $database->exec("ALTER TABLE reviews ADD COLUMN is_featured TINYINT(1) NOT NULL DEFAULT 0 AFTER comment");
+  }
+
   $database->exec("CREATE TABLE IF NOT EXISTS discount_codes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     code VARCHAR(50) NOT NULL UNIQUE,

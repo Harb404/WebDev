@@ -35,18 +35,22 @@
                   <div class="dash-order-status-panel">
                     <span class="dash-status-chip status-<?php echo htmlspecialchars($status); ?>"><?php echo htmlspecialchars($deliveryStatuses[$status] ?? ucfirst($status)); ?></span>
                     <span class="dash-order-time">Expected: <?php echo htmlspecialchars($estimatedDeliveryDisplay); ?></span>
-                    <form class="dash-inline-form" method="post">
-                      <input type="hidden" name="action" value="update_delivery_status">
-                      <input type="hidden" name="panel" value="orders">
-                      <input type="hidden" name="order_id" value="<?php echo (int) $orderId; ?>">
-                      <select name="delivery_status">
-                        <?php foreach ($deliveryStatuses as $value => $label): ?>
-                          <option value="<?php echo htmlspecialchars($value); ?>" <?php echo $status === $value ? 'selected' : ''; ?>><?php echo htmlspecialchars($label); ?></option>
-                        <?php endforeach; ?>
-                      </select>
-                      <input type="datetime-local" name="estimated_delivery" value="<?php echo htmlspecialchars($estimatedDeliveryValue); ?>">
-                      <button class="dash-btn-secondary" type="submit">Update</button>
-                    </form>
+                    <?php if ($status === 'delivered'): ?>
+                      <span class="dash-order-time">Delivered — status is locked.</span>
+                    <?php else: ?>
+                      <form class="dash-inline-form" method="post">
+                        <input type="hidden" name="action" value="update_delivery_status">
+                        <input type="hidden" name="panel" value="orders">
+                        <input type="hidden" name="order_id" value="<?php echo (int) $orderId; ?>">
+                        <select name="delivery_status">
+                          <?php foreach ($deliveryStatuses as $value => $label): ?>
+                            <option value="<?php echo htmlspecialchars($value); ?>" <?php echo $status === $value ? 'selected' : ''; ?>><?php echo htmlspecialchars($label); ?></option>
+                          <?php endforeach; ?>
+                        </select>
+                        <input type="datetime-local" name="estimated_delivery" value="<?php echo htmlspecialchars($estimatedDeliveryValue); ?>">
+                        <button class="dash-btn-secondary" type="submit">Update</button>
+                      </form>
+                    <?php endif; ?>
                   </div>
                 </div>
               <?php endforeach; ?>

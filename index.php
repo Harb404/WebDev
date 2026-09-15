@@ -26,6 +26,39 @@ unset($_SESSION['flash_message']);
 
 require_once __DIR__ . '/actions/cart-actions.php';  // handles add/remove/change-quantity posts
 
+$featuredReviews = $database->query("
+  SELECT reviews.rating, reviews.comment, users.name AS user_name, users.location AS user_location
+  FROM reviews
+  JOIN users ON users.id = reviews.user_id
+  WHERE reviews.is_featured = 1
+  ORDER BY reviews.created_at DESC
+  LIMIT 4
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// The 4 sample testimonials below are permanent showcase cards — they always
+// display alongside whatever real reviews get featured from the admin panel,
+// rather than only appearing when there are zero real featured reviews.
+$sampleTestimonials = [
+  ['name' => 'Richard Cornelius Timosa II', 'location' => 'Dipolog City', 'rating' => 5, 'comment' => 'The quality is amazing.', 'avatar' => 'Pictures/corn.jpg'],
+  ['name' => 'Ciara Amber Saycon', 'location' => 'Pamplona', 'rating' => 5, 'comment' => 'Wow, I love the style, it really fits the groove.', 'avatar' => 'Pictures/ciara.jpg'],
+  ['name' => 'Hecate18', 'location' => 'Tanjay City', 'rating' => 5, 'comment' => 'Their customer service quality is excellent!', 'avatar' => 'Pictures/fhet.jpg'],
+  ['name' => 'Harvey S. Masalihit', 'location' => 'Bais City', 'rating' => 5, 'comment' => 'The design was wonderful.', 'avatar' => 'Pictures/harveyf.jpg'],
+];
+
+$displayTestimonials = [];
+foreach ($featuredReviews as $review) {
+  $displayTestimonials[] = [
+    'name'     => $review['user_name'],
+    'location' => $review['user_location'],
+    'rating'   => (int) $review['rating'],
+    'comment'  => $review['comment'],
+    'avatar'   => null, // real reviewers get an initial avatar, not a photo
+  ];
+}
+foreach ($sampleTestimonials as $sample) {
+  $displayTestimonials[] = $sample;
+}
+
 $cartCount = array_sum($cart);
 $isLoggedIn = !empty($_SESSION['is_admin']) || !empty($_SESSION['user_id']);
 $buyUrl = $isLoggedIn ? 'account.php?checkout=1' : 'login.php?checkout=1';
@@ -172,27 +205,34 @@ foreach ($cart as $productId => $quantity) {
         <h2 class="display" style="font-size:28px;">Style your ideal</h2>
       </div>
 
-      <div class="t-grid">
+      <div class="products-carousel testimonials-carousel">
+        <button class="products-arrow products-arrow-left" type="button" onclick="scrollTestimonials(-1)" aria-label="Scroll testimonials left">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="t-grid" id="t-row">
+        <?php foreach ($displayTestimonials as $review):
+          $initial = strtoupper(substr(trim($review['name']), 0, 1)) ?: '?';
+        ?>
         <div class="t-card">
-          <div class="t-top"><img class="t-avatar" src="Pictures/corn.jpg" alt="Richard Cornelius Timosa II"><div><div class="t-name">Richard Cornelius Timosa II</div><div class="t-loc">Dipolog City</div></div></div>
-          <div class="stars">★★★★★</div>
-          <div class="t-quote">"The quality is amazing."</div>
+          <div class="t-top">
+            <?php if (!empty($review['avatar'])): ?>
+              <img class="t-avatar" src="<?php echo htmlspecialchars($review['avatar']); ?>" alt="<?php echo htmlspecialchars($review['name']); ?>">
+            <?php else: ?>
+              <span class="t-avatar t-avatar-initial" aria-hidden="true"><?php echo htmlspecialchars($initial); ?></span>
+            <?php endif; ?>
+            <div>
+              <div class="t-name"><?php echo htmlspecialchars($review['name']); ?></div>
+              <?php if (!empty($review['location'])): ?><div class="t-loc"><?php echo htmlspecialchars($review['location']); ?></div><?php endif; ?>
+            </div>
+          </div>
+          <div class="stars"><?php echo str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']); ?></div>
+          <?php if (trim((string) $review['comment']) !== ''): ?><div class="t-quote">"<?php echo htmlspecialchars($review['comment']); ?>"</div><?php endif; ?>
         </div>
-        <div class="t-card">
-          <div class="t-top"><img class="t-avatar" src="Pictures/ciara.jpg" alt="Ciara Amber Saycon"><div><div class="t-name">Ciara Amber Saycon</div><div class="t-loc">Pamplona</div></div></div>
-          <div class="stars">★★★★★</div>
-          <div class="t-quote">"Wow, I love the style, it really fits the groove."</div>
+        <?php endforeach; ?>
         </div>
-        <div class="t-card">
-          <div class="t-top"><img class="t-avatar" src="Pictures/fhet.jpg" alt="Hecate18"><div><div class="t-name">Hecate18</div><div class="t-loc">Tanjay City</div></div></div>
-          <div class="stars">★★★★★</div>
-          <div class="t-quote">"Their customer service quality is excellent!"</div>
-        </div>
-        <div class="t-card">
-          <div class="t-top"><img class="t-avatar" src="Pictures/harveyf.jpg" alt="Harvey S. Masalihit"><div><div class="t-name">Harvey S. Masalihit</div><div class="t-loc">Bais City</div></div></div>
-          <div class="stars">★★★★★</div>
-          <div class="t-quote">"The design was wonderful."</div>
-        </div>
+        <button class="products-arrow products-arrow-right" type="button" onclick="scrollTestimonials(1)" aria-label="Scroll testimonials right">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
     </div>
   </section>
