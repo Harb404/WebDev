@@ -21,7 +21,7 @@
 
 html {
     scroll-behavior: smooth;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 section,
@@ -38,7 +38,7 @@ body {
     font-family: var(--font-body);
     line-height: 1.65;
     font-size: 16px;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 .wrap {
@@ -94,6 +94,11 @@ header {
     background: rgba(15, 15, 16, 0.94);
     backdrop-filter: blur(6px);
     z-index: 10;
+    /* sticky + backdrop-filter is a known cause of scroll-time flicker/shake
+       in Chromium and Safari, since the blur gets recalculated on every
+       repaint. Promoting the header to its own compositor layer stops that. */
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 header nav.wrap {
@@ -847,53 +852,141 @@ header nav.wrap {
     min-height: 70vh;
 }
 
-.contact-page-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    align-items: start;
-}
-
 .contact-page-info h1 {
     font-size: 2.4rem;
     margin: 10px 0 14px;
 }
 
 .contact-page-info .contact-intro {
-    margin-bottom: 28px;
+    margin-bottom: 20px;
+}
+
+.contact-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 32px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: var(--gold);
+    color: #14140f;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.contact-profile-btn:hover,
+.contact-profile-btn:focus {
+    background: #e0b562;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -8px rgba(211, 162, 74, 0.45);
 }
 
 .contact-page-info .contact-list {
     max-width: 380px;
 }
 
-.contact-page-chat {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 28px;
-}
-
-.contact-page-chat .chat-widget {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none;
-}
-
-.contact-page-chat .chat-messages {
-    height: 320px;
+.contact-page-single {
+    max-width: 620px;
 }
 
 @media (max-width: 860px) {
     .contact-page {
         padding: 110px 0 60px;
     }
-    .contact-page-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
+}
+
+
+/* Live Chat card on the account/profile page — styled like the admin
+   panel's chat inbox: a header bar, a message log, and a reply bar,
+   each separated by a border, instead of one loose stack of elements. */
+
+.chat-account-card.profile-card {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.chat-account-card.profile-card .chat-panel-head h2 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin: 6px 0 0;
+}
+
+.chat-panel-status {
+    flex-shrink: 0;
+    padding-top: 3px;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.chat-account-card .chat-messages {
+    margin: 0;
+    padding: 16px 22px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    height: 260px;
+}
+
+.chat-account-card .chat-bubble.from-admin {
+    background: var(--bg);
+}
+
+.chat-account-card .chat-form {
+    margin: 0;
+    padding: 14px 22px 20px;
+    border-top: 1px solid var(--border);
+}
+
+@media (max-width: 560px) {
+    .chat-panel-head {
+        padding: 16px 16px 12px;
     }
-    .contact-page-chat .chat-messages {
-        height: 260px;
+    .chat-account-card .chat-messages {
+        padding: 14px 16px;
+        height: 220px;
+    }
+    .chat-account-card .chat-form {
+        padding: 12px 16px 16px;
+    }
+}
+
+
+/* Order History (left) + Live Chat (right) below the full-width Profile
+   Details card. */
+
+.account-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 20px;
+}
+
+.account-bottom-grid .history-card,
+.account-bottom-grid .chat-account-card {
+    max-width: none;
+    margin-bottom: 0;
+    min-width: 0;
+}
+
+@media (max-width: 560px) {
+    .account-bottom-grid {
+        gap: 10px;
     }
 }
 
@@ -1867,7 +1960,6 @@ header nav.wrap {
 }
 
 .profile-card {
-    max-width: 680px;
     padding: 24px 28px;
     margin-bottom: 20px;
     background: var(--card);
@@ -3141,9 +3233,28 @@ header nav.wrap {
 }
 
 .t-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
     gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x proximity;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.t-grid::-webkit-scrollbar {
+    display: none;
+    height: 0;
+}
+
+.testimonials-carousel {
+    max-width: 1180px;
+    margin: 0 auto;
 }
 
 .t-card {
@@ -3151,6 +3262,8 @@ header nav.wrap {
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 20px;
+    flex: 0 0 280px;
+    scroll-snap-align: start;
 }
 
 .t-top {
@@ -3166,6 +3279,16 @@ header nav.wrap {
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
+}
+
+.t-avatar-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(211, 162, 74, 0.14);
+    color: var(--gold);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
 }
 
 .t-name {
@@ -3365,8 +3488,8 @@ footer {
     .fuel .wrap {
         grid-template-columns: 1fr;
     }
-    .t-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .t-card {
+        flex-basis: 240px;
     }
     .product-card {
         flex-basis: 220px;
@@ -3389,8 +3512,8 @@ footer {
     .display {
         font-size: 2.2rem;
     }
-    .t-grid {
-        grid-template-columns: 1fr;
+    .t-card {
+        flex-basis: 220px;
     }
     .product-card {
         flex-basis: 200px;
@@ -3456,6 +3579,7 @@ footer {
 .profile-avatar-placeholder {
     width: 72px;
     height: 72px;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;

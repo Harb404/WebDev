@@ -41,7 +41,7 @@
       <h2><?php echo htmlspecialchars($profile['name'] ?? $_SESSION['user_name']); ?></h2>
       <div class="profile-details">
         <span><?php echo htmlspecialchars($profile['email'] ?? ''); ?></span>
-        <span><?php echo htmlspecialchars($address); ?>, <?php echo htmlspecialchars($location); ?> <?php echo htmlspecialchars($zip); ?></span>
+        <span><?php echo htmlspecialchars(rtrim(trim($address), ', ')); ?>, <?php echo htmlspecialchars($location); ?> <?php echo htmlspecialchars($zip); ?></span>
         <span>Phone: <?php echo $phone !== '' ? htmlspecialchars($phone) : '—'; ?></span>
       </div>
       <details class="edit-profile-toggle" <?php echo (($action ?? '') === 'update_profile' && $error !== '') ? 'open' : ''; ?>>

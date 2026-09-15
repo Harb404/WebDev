@@ -47,6 +47,16 @@ uasort($refundRequests, function ($a, $b) {
   return $rankDiff !== 0 ? $rankDiff : $b['id'] <=> $a['id'];
 });
 
+$reviews = $database->query("
+  SELECT reviews.id, reviews.rating, reviews.comment, reviews.is_featured, reviews.created_at,
+         products.name AS product_name,
+         users.name AS user_name, users.location AS user_location
+  FROM reviews
+  JOIN products ON products.id = reviews.product_id
+  JOIN users ON users.id = reviews.user_id
+  ORDER BY reviews.is_featured DESC, reviews.created_at DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
 $deliveryStatuses = [
   'pending' => 'Pending',
   'processing' => 'Processing',

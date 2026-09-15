@@ -151,6 +151,12 @@ if ($action === 'update_delivery_status') {
 
   $order = $orders[$orderId];
   $previousStatus = $order['delivery_status'] ?: 'pending';
+
+  // Delivered is a final state — once set, it can no longer be changed.
+  if ($previousStatus === 'delivered') {
+    adminRedirect($panel, 'Order #' . $orderId . ' has already been delivered — its status is locked.');
+  }
+
   $estimatedDeliveryValue = $estimatedDelivery !== '' ? date('Y-m-d H:i:s', strtotime($estimatedDelivery)) : null;
 
   $statement = $database->prepare('UPDATE orders SET delivery_status = ?, estimated_delivery = ?, status_seen = 0 WHERE id = ?');
@@ -303,4 +309,29 @@ if ($action === 'delete_discount_code') {
     $database->prepare('DELETE FROM discount_codes WHERE id = ?')->execute([$codeId]);
   }
   adminRedirect($panel, 'Discount code deleted.');
+}
+
+/* ---------------- Feedback ---------------- */
+
+if ($action === 'toggle_featured_review') {
+  $reviewId = (int) ($_POST['review_id'] ?? 0);
+  if ($reviewId) {
+    $currentStatement = $database->prepare('SELECT is_featured FROM reviews WHERE id = ?');
+    $currentStatement->execute([$reviewId]);
+    $currentValue = $currentStatement->fetchColumn();
+    if ($currentValue !== false) {
+      $newValue = $currentValue ? 0 : 1;
+      $database->prepare('UPDATE reviews SET is_featured = ? WHERE id = ?')->execute([$newValue, $reviewId]);
+      adminRedirect($panel, $newValue ? 'Review added to the homepage testimonials.' : 'Review removed from the homepage testimonials.');
+    }
+  }
+  adminRedirect($panel, 'Review not found.');
+}
+
+if ($action === 'delete_review') {
+  $reviewId = (int) ($_POST['review_id'] ?? 0);
+  if ($reviewId) {
+    $database->prepare('DELETE FROM reviews WHERE id = ?')->execute([$reviewId]);
+  }
+  adminRedirect($panel, 'Review deleted.');
 }

@@ -9,8 +9,60 @@ function scrollProducts(direction) {
     }
 }
 
+function scrollTestimonials(direction) {
+    var row = document.getElementById('t-row');
+    if (!row) return;
+    var amount = Math.round(row.clientWidth * 0.8);
+    if (typeof row.scrollBy === 'function') {
+        row.scrollBy({ left: direction * amount, top: 0, behavior: 'smooth' });
+    } else {
+        row.scrollLeft = row.scrollLeft + (direction * amount);
+    }
+}
+
 function setupInfiniteProducts() {
     var row = document.getElementById('products-row');
+    if (!row) return;
+    var originalCards = Array.from(row.children);
+    if (originalCards.length === 0) return;
+
+    originalCards.forEach(function(card) {
+        row.insertBefore(card.cloneNode(true), row.firstChild);
+    });
+    originalCards.forEach(function(card) {
+        row.appendChild(card.cloneNode(true));
+    });
+
+    var setWidth = 0;
+
+    function measure() {
+        setWidth = row.scrollWidth / 3;
+        var behavior = row.style.scrollBehavior;
+        row.style.scrollBehavior = 'auto';
+        row.scrollLeft = setWidth;
+        row.style.scrollBehavior = behavior;
+    }
+
+    requestAnimationFrame(measure);
+    window.addEventListener('resize', measure);
+
+    row.addEventListener('scroll', function() {
+        if (!setWidth) return;
+        var buffer = 4;
+        if (row.scrollLeft <= buffer) {
+            row.style.scrollBehavior = 'auto';
+            row.scrollLeft += setWidth;
+            row.style.scrollBehavior = '';
+        } else if (row.scrollLeft >= setWidth * 2 - buffer) {
+            row.style.scrollBehavior = 'auto';
+            row.scrollLeft -= setWidth;
+            row.style.scrollBehavior = '';
+        }
+    });
+}
+
+function setupInfiniteTestimonials() {
+    var row = document.getElementById('t-row');
     if (!row) return;
     var originalCards = Array.from(row.children);
     if (originalCards.length === 0) return;
@@ -83,7 +135,11 @@ function smoothScrollTo(targetY) {
         if (!start) start = timestamp;
         var progress = Math.min((timestamp - start) / duration, 1);
         var eased = 1 - Math.pow(1 - progress, 3);
-        window.scrollTo(0, startY + (distance * eased));
+        // behavior: 'auto' is required here — without it, the CSS
+        // `scroll-behavior: smooth` on <html> makes the browser smooth-animate
+        // *each* of these per-frame jumps too, stacking on top of this
+        // function's own easing and producing a visible shake/jitter.
+        window.scrollTo({ top: startY + (distance * eased), left: 0, behavior: 'auto' });
 
         if (progress < 1) {
             requestAnimationFrame(step);
@@ -91,6 +147,57 @@ function smoothScrollTo(targetY) {
     }
 
     requestAnimationFrame(step);
+}
+
+function setupScrollSpy() {
+    // "top" lives on <main>, which wraps every section on the page, so it
+    // can't be used as the scroll target for Home. Use the actual hero
+    // section as its stand-in instead.
+    var heroSection = document.querySelector('.hero');
+
+    var sections = [];
+    navLinks.forEach(function(link) {
+        var targetId = link.dataset.target;
+        if (!targetId) return;
+        var el = targetId === 'top' ? heroSection : document.getElementById(targetId);
+        if (el && !sections.some(function(s) { return s.el === el; })) {
+            sections.push({ id: targetId, el: el });
+        }
+    });
+    // sections is built in nav order (Home, About Me, Featured, Contact Us),
+    // which already matches their top-to-bottom order in the page markup.
+
+    if (!sections.length) return;
+
+    var headerOffset = 96; // sticky header height + a little buffer
+
+    function updateActiveSection() {
+        // The active section is the last one whose top has scrolled past the
+        // header — checked directly against current position, so there's no
+        // ambiguity from multiple sections reporting "intersecting" at once.
+        var current = sections[0].id;
+        for (var i = 0; i < sections.length; i++) {
+            if (sections[i].el.getBoundingClientRect().top <= headerOffset) {
+                current = sections[i].id;
+            } else {
+                break;
+            }
+        }
+        setActiveNav(current);
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                updateActiveSection();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+
+    updateActiveSection();
 }
 
 function goTo(id) {
@@ -702,6 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setupInfiniteProducts();
+    setupInfiniteTestimonials();
     setupActiveProductCard();
     setupCartAjax();
     setupChatForm();
@@ -710,6 +818,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupBuyConfirmation();
     setupReceiptModal();
     setupNotifications();
+    setupScrollSpy();
 
     if (document.getElementById('chat-messages')) {
         startChatPolling();

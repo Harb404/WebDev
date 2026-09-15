@@ -84,7 +84,13 @@ require_once __DIR__ . '/includes/account-view-data.php';
   <?php if (!empty($_SESSION['user_id'])): ?>
 <?php include __DIR__ . '/account/profile-card.php'; ?>
 <?php include __DIR__ . '/account/checkout.php'; ?>
+<?php if (!$isCheckout): ?><div class="account-bottom-grid">
+<?php endif; ?>
 <?php include __DIR__ . '/account/order-history.php'; ?>
+<?php include __DIR__ . '/account/chat-widget.php'; ?>
+<?php if (!$isCheckout): ?></div>
+<?php endif; ?>
+<a class="back-link" href="logout.php">Log out</a>
   <?php else: ?>
 <?php include __DIR__ . '/account/login-register.php'; ?>
   <?php endif; ?>

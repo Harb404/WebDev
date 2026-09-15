@@ -14,7 +14,7 @@ unset($_SESSION['admin_flash_message']);
 // redirect-after-post we land back where the admin was working instead of
 // always snapping to the Dashboard. A plain visit/refresh of admin.php
 // (no ?panel= in the URL) still defaults to the Dashboard, as before.
-$validPanels = ['overview', 'products', 'orders', 'refunds', 'history', 'customers', 'discounts', 'messages'];
+$validPanels = ['overview', 'products', 'orders', 'refunds', 'history', 'customers', 'discounts', 'feedback', 'messages'];
 $activePanel = $_GET['panel'] ?? 'overview';
 if (!in_array($activePanel, $validPanels, true)) {
   $activePanel = 'overview';
@@ -110,6 +110,8 @@ $topProducts = $database->query("SELECT order_items.product_name, SUM(order_item
 <?php include __DIR__ . '/admin/panel-customers.php'; ?>
 
 <?php include __DIR__ . '/admin/panel-discounts.php'; ?>
+
+<?php include __DIR__ . '/admin/panel-feedback.php'; ?>
 
 <?php include __DIR__ . '/admin/panel-messages.php'; ?>
     </div>

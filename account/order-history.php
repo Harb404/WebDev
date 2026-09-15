@@ -1,8 +1,7 @@
 <?php
 /**
  * Order History card: past orders with a delivery tracker, item
- * list, and a review form per delivered item. Also renders the
- * "Log out" link that sits below it while logged in.
+ * list, and a review form per delivered item.
  * Expects $purchaseHistory, $products, and $existingReviews to be
  * set by the caller.
  */
@@ -206,4 +205,3 @@
         </div>
       <?php endif; ?>
     </section><?php endif; ?>
-    <a class="back-link" href="logout.php">Log out</a>
